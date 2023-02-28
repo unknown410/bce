@@ -1,0 +1,32 @@
+
+# SPDX-License-Identifier: Apache-2.0
+version: '2.1'
+
+volumes:
+  pgdata:
+  walletstore:
+
+networks:
+  peer.com:
+    name: test
+
+services:
+
+  explorerdb.peer.com:
+    image: hyperledger/explorer-db:latest
+    container_name: explorerdb.peer.com
+    hostname: explorerdb.peer.com
+    environment:
+      - DATABASE_DATABASE=fabricexplorer
+      - DATABASE_USERNAME=hppoc
+      - DATABASE_PASSWORD=password	
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./explorer-dbfiles:/opt/dbfiles
+    networks:
+      - peer.com
